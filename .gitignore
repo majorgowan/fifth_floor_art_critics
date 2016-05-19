@@ -1,0 +1,12 @@
+# git ignore file
+# 
+# Ignore python environment directory
+*env/
+# zip files
+*.zip
+# precompiled python files
+*.pyc
+# swap files (eg vim)
+*.swp
+# log files (if exist)
+*.log
