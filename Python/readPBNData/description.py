@@ -1,20 +1,20 @@
-def openZip(filename, start=0, end=None):
+def openZip(filename):
     # given a zip file, locate all csv files (not starting with '_'
     # and return:
     #
     #   - a list of filenames
     #   - a list of file-like objects pointing to csv files
     #
-    import zipfile as zf
+    import zipfile 
     import re
     # ZipFile object for requested zip file
-    dataZip = zf.ZipFile(filename,'r')
+    zf = zipfile.ZipFile(filename,'r')
     # find csv files (not starting with '_'
-    csvs = [w for w in dataZip.namelist() if re.search('^[^_].*\.csv$',w)]
+    csvs = [w for w in zf.namelist() if re.search('^[^_].*\.csv$',w)]
     # for each csv file in archive, convert to file-like object
     fileLike = []
     for csv in csvs:
-        fileLike.append(dataZip.open(csv))
+        fileLike.append(zf.open(csv))
     return csvs, fileLike
 
 def readCSV(fileLike, header=True):
@@ -39,6 +39,10 @@ def columns(lines, head):
     return cols
 
 def table(vector_input, ordered=True, numeric=False):
+    # return list of tuples consisting of: 
+    #
+    #   (distinct elements in vector_input, number of occurrences in vector_input) 
+    #
     from collections import Counter
     def num(val):
         try:
@@ -57,3 +61,13 @@ def table(vector_input, ordered=True, numeric=False):
     if (ordered):
         data = sorted(data, key=lambda item: item[1], reverse=True)
     return data
+
+def sameArtist(artistName, artistList, imageList=None):
+    # return list of indices of paintings by the specified artist
+    # optional argument computes intersection with supplied imageList
+    #
+    fullList = [i for i,name in enumerate(artistList) if name==artistName]
+    if (imageList):
+        return sorted(list(set(fullList).intersection(set(imageList))))
+    else:
+        return fullList
