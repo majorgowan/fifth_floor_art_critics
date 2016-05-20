@@ -1,0 +1,2 @@
+[filter "clean_ipynb"]
+	clean = strip_ipynb_output

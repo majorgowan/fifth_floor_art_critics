@@ -26,7 +26,7 @@ def openZipImage(zipname, imagename, prefix=None):
         img = Image.open(dataEnc)
         return img
 
-def imagesInZip(zipname, filelist, prefix=None, maxLen=None):
+def imagesInZip(zipname, filelist, prefix=None, maxLen=None, returntype='indices'):
     # given a zip filename and a list of image
     # filenames, return:
     #
@@ -40,11 +40,36 @@ def imagesInZip(zipname, filelist, prefix=None, maxLen=None):
     zf = zipfile.ZipFile(zipname,'r')
     if not maxLen:
         maxLen = len(filelist)
-    # compose full image name
-    if (prefix):
+    if not prefix:
+        prefix = '.'
+    if (returntype == 'indices'):
         inlist = [i for i,x in enumerate(filelist[:maxLen])
-                    if (prefix + '/' + x) in zf.namelist()]
-    else:
-        inlist = [i for i,x in enumerate(filelist[:maxLen]) if x in zf.namelist()]
+                        if (prefix + '/' + x) in zf.namelist()]
+    elif (returntype == 'names'):
+        inlist = [x for x in filelist[:maxLen] if (prefix + '/' + x) in zf.namelist()]
+    return inlist
+
+def miniatures(zipname, filelist, prefix=None, size=(100,100)):
+    # for all the images in imagelist found in the zipfile
+    # generate miniature versions of size size
+    #
+    # save miniatures to files
+    #
+    #   ../Data/FeatureData/[index]_mini_[size].jpg
+    #
+    # if they don't already exist
+    #
+    import os.path
+    inlist = imagesInZip(zipname, filelist, prefix=prefix, returntype='names')
+    for imgfile in inlist:
+        destfilename = '../Data/FeatureData/%05d_mini_%d_x_%d.jpg' \
+                        % (imgfile,size[0],size[1])
+        if os.path.isfile(destfilename):
+            img = openZipImage(zipname, imgfile, prefix)
+            mini = img.resize(size=size)
+            print('saving file ' + destfilename)
+            mini.save(destfilename)
+        else:
+            print(distfilename + ' already exists')
     return inlist
 
