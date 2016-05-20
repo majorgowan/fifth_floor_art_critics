@@ -62,11 +62,22 @@ def table(vector_input, ordered=True, numeric=False):
         data = sorted(data, key=lambda item: item[1], reverse=True)
     return data
 
-def sameArtist(artistName, artistList, imageList=None):
-    # return list of indices of paintings by the specified artist
+def imagesInZip(filename, strippath=True):
+    # return list of jpg filenames in an zip file
+    import zipfile
+    import re
+    import os.path
+    zf = zipfile.ZipFile(filename,'r')
+    if (strippath):
+        return [os.path.basename(w) for w in zf.namelist() if re.search('.+\.jpg$',w)]
+    else:
+        return [w for w in zf.namelist() if re.search('.+\.jpg$',w)]
+
+def sameArtist(artistName, columns, imageList=None):
+    # return list of paintings by the specified artist
     # optional argument computes intersection with supplied imageList
     #
-    fullList = [i for i,name in enumerate(artistList) if name==artistName]
+    fullList = [columns['filename'][i] for i,name in enumerate(columns['artist']) if name==artistName]
     if (imageList):
         return sorted(list(set(fullList).intersection(set(imageList))))
     else:
