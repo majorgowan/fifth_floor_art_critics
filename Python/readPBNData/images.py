@@ -26,7 +26,7 @@ def openZipImage(zipname, imagename, prefix=None):
         img = Image.open(dataEnc)
         return img
 
-def miniatures(zipname, filelist, prefix=None, size=(100,100)):
+def miniatures(zipname, filelist, prefix=None, size=(100,100), verbose=False):
     # for all the images in filelist found in the zipfile
     # generate miniature versions of size size
     #
@@ -49,9 +49,52 @@ def miniatures(zipname, filelist, prefix=None, size=(100,100)):
         if not os.path.isfile(destfilename):
             img = openZipImage(zipname, imgfile, prefix)
             mini = img.resize(size=size)
-            print('saving file ' + destfilename)
+            if verbose:
+                print('saving file ' + destfilename)
             mini.save(destfilename)
         else:
-            print(destfilename + ' already exists')
+            if verbose:
+                print(destfilename + ' already exists')
+    return inlist
+
+def cutouts(zipname, filelist, prefix=None, size=(100,100), topleft=(0.25,0.25), verbose=False):
+    # for all the images in filelist found in the zipfile
+    # generate a small cut-out sample of size size
+    # with top-left corner at **relative** position topleft
+    #
+    # save cut-outs to files
+    #
+    #   ../Data/FeatureData/[index]_cutout_[size]_[topleft].jpg
+    #
+    # where size and topleft are values in *pixels*
+    #
+    # if they don't already exist
+    #
+    import os.path
+    import description as rd
+    inlist = set(rd.imagesInZip(zipname)).intersection(set(filelist))
+    # create directory for miniatures if necessary
+    if not os.path.exists('../Data/FeatureData'):
+            os.makedirs('../Data/FeatureData')
+    for imgfile in inlist:
+        rootname = os.path.splitext(imgfile)[0]
+        # open full image
+        img = openZipImage(zipname, imgfile, prefix)
+        imgSize = img.size
+        # compute top-left corner in pixels
+        tlp = [int(imgSize[0]*topleft[0]),int(imgSize[1]*topleft[1])]
+        tlp[0] = min(tlp[0],imgSize[0]-size[0])
+        tlp[1] = min(tlp[1],imgSize[1]-size[1])
+        # compose filename
+        destfilename = '../Data/FeatureData/%s_cutout_%d_x_%d_topleft_%d_%d.jpg' \
+                        % (rootname,size[0],size[1],tlp[0],tlp[1])
+        if not os.path.isfile(destfilename):
+            cutout = img.crop(box=(tlp[0],tlp[1],tlp[0]+size[0],tlp[1]+size[1]))
+            if verbose:
+                print('saving file ' + destfilename)
+            cutout.save(destfilename)
+        else:
+            if verbose:
+                print(destfilename + ' already exists')
     return inlist
 
