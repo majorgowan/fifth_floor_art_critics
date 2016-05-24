@@ -42,6 +42,8 @@ def miniatures(zipname, filelist, prefix=None, size=(100,100), verbose=False):
     # create directory for miniatures if necessary
     if not os.path.exists('../Data/FeatureData'):
             os.makedirs('../Data/FeatureData')
+    # list of created filenames
+    minilist = []
     for imgfile in inlist:
         rootname = os.path.splitext(imgfile)[0]
         destfilename = '../Data/FeatureData/%s_mini_%d_x_%d.jpg' \
@@ -55,7 +57,8 @@ def miniatures(zipname, filelist, prefix=None, size=(100,100), verbose=False):
         else:
             if verbose:
                 print(destfilename + ' already exists')
-    return inlist
+        minilist.append(os.path.basename(destfilename))
+    return minilist
 
 def cutouts(zipname, filelist, prefix=None, size=(100,100), topleft=(0.25,0.25), verbose=False):
     # for all the images in filelist found in the zipfile
@@ -64,7 +67,7 @@ def cutouts(zipname, filelist, prefix=None, size=(100,100), topleft=(0.25,0.25),
     #
     # save cut-outs to files
     #
-    #   ../Data/FeatureData/[index]_cutout_[size]_[topleft].jpg
+    #   ../Data/FeatureData/[index]_cutout_[size].jpg
     #
     # where size and topleft are values in *pixels*
     #
@@ -76,19 +79,21 @@ def cutouts(zipname, filelist, prefix=None, size=(100,100), topleft=(0.25,0.25),
     # create directory for miniatures if necessary
     if not os.path.exists('../Data/FeatureData'):
             os.makedirs('../Data/FeatureData')
+    # list of created filenames
+    cutoutlist = []
     for imgfile in inlist:
         rootname = os.path.splitext(imgfile)[0]
-        # open full image
-        img = openZipImage(zipname, imgfile, prefix)
-        imgSize = img.size
-        # compute top-left corner in pixels
-        tlp = [int(imgSize[0]*topleft[0]),int(imgSize[1]*topleft[1])]
-        tlp[0] = min(tlp[0],imgSize[0]-size[0])
-        tlp[1] = min(tlp[1],imgSize[1]-size[1])
         # compose filename
-        destfilename = '../Data/FeatureData/%s_cutout_%d_x_%d_topleft_%d_%d.jpg' \
-                        % (rootname,size[0],size[1],tlp[0],tlp[1])
+        destfilename = '../Data/FeatureData/%s_cutout_%d_x_%d.jpg' \
+                        % (rootname,size[0],size[1])
         if not os.path.isfile(destfilename):
+            # open full image
+            img = openZipImage(zipname, imgfile, prefix)
+            imgSize = img.size
+            # compute top-left corner in pixels
+            tlp = [int(imgSize[0]*topleft[0]),int(imgSize[1]*topleft[1])]
+            tlp[0] = min(tlp[0],imgSize[0]-size[0])
+            tlp[1] = min(tlp[1],imgSize[1]-size[1])
             cutout = img.crop(box=(tlp[0],tlp[1],tlp[0]+size[0],tlp[1]+size[1]))
             if verbose:
                 print('saving file ' + destfilename)
@@ -96,5 +101,6 @@ def cutouts(zipname, filelist, prefix=None, size=(100,100), topleft=(0.25,0.25),
         else:
             if verbose:
                 print(destfilename + ' already exists')
-    return inlist
+        cutoutlist.append(os.path.basename(destfilename))
+    return cutoutlist
 
