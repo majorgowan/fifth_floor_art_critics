@@ -7,6 +7,6 @@ setup(name='PBNPCA',
         author='Mark Fruman',
         author_email='majorgowan@yahoo.com',
         license='MIT',
-        packages=['description'],
+        packages=['pca'],
         install_requires=['numpy'],
         zip_safe=False)

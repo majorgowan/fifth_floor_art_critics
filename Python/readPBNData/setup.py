@@ -7,6 +7,6 @@ setup(name='readPBNData',
         author='Mark Fruman',
         author_email='majorgowan@yahoo.com',
         license='MIT',
-        packages=['description'],
+        packages=['description', 'images'],
         install_requires=[],
         zip_safe=False)
