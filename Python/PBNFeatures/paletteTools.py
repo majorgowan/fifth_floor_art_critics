@@ -13,6 +13,13 @@ def unflatten(palette, ncolours=None):
     ncolours = ncolours or len(palette)/3
     return [tuple(palette[a:a+3]) for a in xrange(0,3*ncolours,3)]
 
+def completeColours(colours, ncolours=16):
+    # insert colour counts of 0 for missing entries
+    for n in xrange(ncolours):
+        if n not in [a[1] for a in colours]:
+            colours.insert(n,(0, n))
+    return colours
+
 def CGApalette(ncolours=16):
     # retro 4-colour and 16-colour CGA palettes
     if (ncolours == 4):
@@ -80,6 +87,9 @@ def plotColourDistribution(colours, palette):
     ax = plt.axes()
     # add trivial alpha channel to palette and rescale to 0-1
     rgba = [normalizeRGB(c) for c in palette]
+    # if colours has missing values (no pixels of that colour)
+    # fill with zeros
+    colours = completeColours(colours,len(palette))
     pos = [a[1] for a in colours]
     heights = [a[0] for a in colours]
     plt.bar(pos, heights, width=0.8, color=rgba)
