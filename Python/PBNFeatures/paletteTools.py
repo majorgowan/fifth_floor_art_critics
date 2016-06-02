@@ -92,6 +92,9 @@ def plotColourDistribution(colours, palette):
     colours = completeColours(colours,len(palette))
     pos = [a[1] for a in colours]
     heights = [a[0] for a in colours]
+    plt.title('Distribution of colours in painting')
+    plt.xlabel('colour number')
+    plt.ylabel('pixel count')
     plt.bar(pos, heights, width=0.8, color=rgba)
 
 def paletteToImage(palette):
