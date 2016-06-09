@@ -90,6 +90,36 @@ def confusion(actual, predicted, thresh=0.5):
     fn = np.sum(int(p<thresh) for i,p in enumerate(predicted) if actual[i]==1)
     return np.mat([[tn, fp],[fn,tp]])
 
+def ROC(actual, predicted, step=0.1):
+    thresh=step
+    par = [0.0]
+    acc = [None]
+    fpr = [0.0]
+    tpr = [0.0]
+    while thresh < 1.0:
+        par.append(thresh)
+        conf = confusion(actual, predicted, thresh=thresh)
+        tn = conf[0,0]
+        fn = conf[1,0]
+        tp = conf[1,1]
+        fp = conf[0,1]
+        fpr.append(float(fp)/(fp+tn))
+        tpr.append(float(tp)/(tp+fn))
+        acc.append(float(np.trace(conf))/np.sum(conf))
+        print('par: ' + str(thresh) + \
+                ', tpr: ' + str(float(tp)/(tp+fn)) + \
+                ', fpr: ' + str(float(fp)/(fp+tn)))
+        thresh += step
+    par.append(1.0)
+    tpr.append(1.0)
+    fpr.append(1.0)
+    acc.append(None)
+    obj = { 'par': par, \
+            'tpr': tpr, \
+            'fpr': fpr, \
+            'acc': acc }
+    return obj
+
 # -------------------------------------------
 # fix up the following more efficient methods
 def stocGradAscent0(dataMatrix, classLabels, alpha=0.01, niter=10):

@@ -37,3 +37,34 @@ def hsv_stats(hsvlist, hue_bins=8):
             }
     return hsv_statsobj
 
+def completeSortHues(hue_bins, nhues=16):
+    # make a copy and sort it
+    hb = sorted(hue_bins[:])
+    # insert colour counts of 0 for missing entries
+    for n in xrange(nhues):
+        if n not in [a[0] for a in hb]:
+            hb.insert(n,(0, n))
+    return hb
+
+def plotHueDistribution(hue_bins):
+    import colorsys
+    import paletteTools as pt
+    import matplotlib.pyplot as plt
+    fig = plt.figure()
+    ax = plt.axes()
+    # construct palette from central colour
+    # in each hue_bin
+    nbins = len(hue_bins)
+    hue = [(i+0.5)/nbins for (i,n) in hue_bins]
+    sat = nbins*[1.0]
+    val = nbins*[1.0]
+    # convert to rgba
+    rgblist = [colorsys.hsv_to_rgb(*hsv) for hsv in zip(hue,sat,val)]
+    # add trivial alpha channel
+    rgba = [(r,g,b,1.0) for (r,g,b) in rgblist]
+    pos = [a[0] for a in hue_bins]
+    heights = [a[1] for a in hue_bins]
+    plt.title('Distribution of hues in painting')
+    plt.xlabel('hue bin')
+    plt.ylabel('pixel count')
+    plt.bar(pos, heights, width=0.8, color=rgba)
