@@ -9,6 +9,12 @@ def jpg_to_hsv(img):
     hsvlist = [colorsys.rgb_to_hsv(*rgb) for rgb in rgblist]
     return hsvlist
 
+def hsv_to_rgb(hsvlist):
+    import colorsys
+    rgblist = [colorsys.hsv_to_rgb(*hsv) for hsv in hsvlist]
+    rgblist = [(int(256*r),int(256*g),int(256*b)) for (r,g,b) in rgblist]
+    return rgblist
+
 def hsv_stats(hsvlist, hue_bins=8):
     # given a list of hsv pixel values, return:
     #  * mean and std of saturation (radial) values,
@@ -46,7 +52,7 @@ def completeSortHues(hue_bins, nhues=16):
             hb.insert(n,(0, n))
     return hb
 
-def plotHueDistribution(hue_bins):
+def plotHueDistribution(hue_bins, nhues=16):
     import colorsys
     import paletteTools as pt
     import matplotlib.pyplot as plt
@@ -54,10 +60,9 @@ def plotHueDistribution(hue_bins):
     ax = plt.axes()
     # construct palette from central colour
     # in each hue_bin
-    nbins = len(hue_bins)
-    hue = [(i+0.5)/nbins for (i,n) in hue_bins]
-    sat = nbins*[1.0]
-    val = nbins*[1.0]
+    hue = [(i+0.5)/nhues for (i,n) in hue_bins]
+    sat = len(hue)*[1.0]
+    val = len(hue)*[1.0]
     # convert to rgba
     rgblist = [colorsys.hsv_to_rgb(*hsv) for hsv in zip(hue,sat,val)]
     # add trivial alpha channel

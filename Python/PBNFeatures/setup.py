@@ -7,6 +7,6 @@ setup(name='PBNFeatures',
         author='Mark Fruman',
         author_email='majorgowan@yahoo.com',
         license='MIT',
-        packages=['paletteTools', 'cylindrical']
+        packages=['paletteTools', 'cylindrical', 'textureTools']
         install_requires=['Pillow'],
         zip_safe=False)
