@@ -26,7 +26,8 @@ def openZipImage(zipname, imagename, prefix=None):
         img = Image.open(dataEnc)
         return img
 
-def miniatures(zipname, filelist, prefix=None, size=(100,100), verbose=False):
+def miniatures(zipname, filelist, destDir, prefix=None, size=(100,100), \
+               verbose=False):
     # for all the images in filelist found in the zipfile
     # generate miniature versions of size size
     #
@@ -40,13 +41,13 @@ def miniatures(zipname, filelist, prefix=None, size=(100,100), verbose=False):
     import description as rd
     inlist = set(rd.imagesInZip(zipname)).intersection(set(filelist))
     # create directory for miniatures if necessary
-    if not os.path.exists('../Data/FeatureData'):
-            os.makedirs('../Data/FeatureData')
+    if not os.path.exists(destDir):
+        os.makedirs(destDir)
     # list of created filenames
     minilist = []
     for imgfile in inlist:
         rootname = os.path.splitext(imgfile)[0]
-        destfilename = '../Data/FeatureData/%s_mini_%d_x_%d.jpg' \
+        destfilename = destDir + '%s_mini_%d_x_%d.jpg' \
                         % (rootname,size[0],size[1])
         if not os.path.isfile(destfilename):
             img = openZipImage(zipname, imgfile, prefix)
@@ -60,7 +61,8 @@ def miniatures(zipname, filelist, prefix=None, size=(100,100), verbose=False):
         minilist.append(os.path.basename(destfilename))
     return minilist
 
-def cutouts(zipname, filelist, prefix=None, size=(100,100), topleft=(0.25,0.25), verbose=False):
+def cutouts(zipname, filelist, destDir, prefix=None, size=(100,100), \
+            topleft=(0.25,0.25), verbose=False):
     # for all the images in filelist found in the zipfile
     # generate a small cut-out sample of size size
     # with top-left corner at **relative** position topleft
@@ -77,15 +79,16 @@ def cutouts(zipname, filelist, prefix=None, size=(100,100), topleft=(0.25,0.25),
     import description as rd
     inlist = set(rd.imagesInZip(zipname)).intersection(set(filelist))
     # create directory for miniatures if necessary
-    if not os.path.exists('../Data/FeatureData'):
-            os.makedirs('../Data/FeatureData')
+    if not os.path.exists(destDir):
+        os.makedirs(destDir)
+    cornerString = str(int(100*topleft[0]))+'_'+str(int(100*topleft[1]))
     # list of created filenames
     cutoutlist = []
     for imgfile in inlist:
         rootname = os.path.splitext(imgfile)[0]
         # compose filename
-        destfilename = '../Data/FeatureData/%s_cutout_%d_x_%d.jpg' \
-                        % (rootname,size[0],size[1])
+        destfilename = destDir + '%s_cutout_%d_x_%d_corner_%s.jpg' \
+                        % (rootname,size[0],size[1],cornerString)
         if not os.path.isfile(destfilename):
             # open full image
             img = openZipImage(zipname, imgfile, prefix)
